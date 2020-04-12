@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import edu.utexas.testing.ee382c.entities.JUnitTests;
 import edu.utexas.testing.ee382c.entities.ParserResults;
 import edu.utexas.testing.ee382c.utils.JavaParserUtil;
 
@@ -35,6 +36,9 @@ public class CodeCoverage {
 
         ParserResults parserResults = JavaParserUtil.parseTarget(targetFile);
 
+        //Find each JUnit test method in the test file
+        JUnitTests jUnitTests = JavaParserUtil.parseJUnitFile(unitTestFile);
+
         //Create a temporary working directory
         Path tempDir = Files.createTempDirectory("CodeCoverage");
         System.out.println("Created temporary directory to build and execute junit tests: " + tempDir);
@@ -50,13 +54,12 @@ public class CodeCoverage {
 
 
         //TODO: Stuff to do:
-        // - Parse the JUnit test file to identify test methods
         // - Copy these dependencies into the temp directory:
         //   -SingleJUnitTestRunner.java
         //   -lib/junit.jar
         //   -lib/org.hamcreast.core...jar
         // - Use 'javac' to compile compile the three .java files into .class files:
-        // - For each test method found in the JUnit file, execute the SingleJUnitTestRunner
+        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
         // - Parse the output of each execution and store the coverage results.
     }
 

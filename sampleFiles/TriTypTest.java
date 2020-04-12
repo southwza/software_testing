@@ -23,4 +23,8 @@ public class TriTypTest {
     public void testInvalid() {
         assertEquals(4, TriTyp.triang(1, 1, 2));
     }
+
+    public void notATestMethod() {
+        System.out.println("this method is not a test");
+    }
 }

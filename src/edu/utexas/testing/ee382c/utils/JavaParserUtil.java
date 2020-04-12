@@ -1,9 +1,9 @@
 package edu.utexas.testing.ee382c.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.github.javaparser.Position;
 import com.github.javaparser.StaticJavaParser;
@@ -12,7 +12,9 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
+import edu.utexas.testing.ee382c.entities.JUnitTests;
 import edu.utexas.testing.ee382c.entities.JavaStatement;
 import edu.utexas.testing.ee382c.entities.ParserResults;
 
@@ -25,6 +27,26 @@ public class JavaParserUtil {
         statementAnnotationPrepender.visit(cu, results);
         results.setCompilationUnit(cu);
         return results;
+    }
+
+    public static JUnitTests parseJUnitFile(File jUnitFile) throws FileNotFoundException {
+        JUnitTests jUnitTests = new JUnitTests();
+        CompilationUnit cu = StaticJavaParser.parse(jUnitFile);
+        List<String> testMethods = new ArrayList<String>();
+        VoidVisitorAdapter<List<String>> testMethodFinder = new TestMethodFinder();
+        testMethodFinder.visit(cu, testMethods);
+        jUnitTests.setTestMethods(testMethods);
+        return jUnitTests;
+    }
+
+    private static class TestMethodFinder extends VoidVisitorAdapter<List<String>> {
+        @Override
+        public void visit(MethodDeclaration md, List<String> testMethods) {
+            super.visit(md, testMethods);
+            if (md.isAnnotationPresent("Test")) {
+                testMethods.add(md.getNameAsString());
+            }
+        }
     }
 
     private static class StatementAnnotationPrepender extends ModifierVisitor<ParserResults> {
