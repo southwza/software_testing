@@ -1,18 +1,19 @@
 package edu.utexas.testing.ee382c;
 
+import edu.utexas.testing.ee382c.entities.JUnitTests;
+import edu.utexas.testing.ee382c.entities.ParserResults;
+import edu.utexas.testing.ee382c.utils.JavaParserUtil;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
-
-import edu.utexas.testing.ee382c.entities.JUnitTests;
-import edu.utexas.testing.ee382c.entities.ParserResults;
-import edu.utexas.testing.ee382c.utils.JavaParserUtil;
 
 public class CodeCoverage {
 
@@ -43,6 +44,11 @@ public class CodeCoverage {
         Path tempDir = Files.createTempDirectory("CodeCoverage");
         System.out.println("Created temporary directory to build and execute junit tests: " + tempDir);
 
+        // copy dependencies into the temp directory
+        copyProjectResourceToDest("junit.jar", tempDir);
+        copyProjectResourceToDest("org.hamcrest.core_1.3.0.jar", tempDir);
+        copyProjectResourceToDest("SingleJUnitTestRunner.java", tempDir);
+
         //create an annotated version of the target file in our temp directory
         String annotatedJavaString = parserResults.toString();
         File annotatedJavaFile = new File(tempDir.toFile(), (targetFile.getName()));
@@ -51,13 +57,7 @@ public class CodeCoverage {
         //copy the junit test file to the temp directory
         Files.copy(unitTestFile.toPath(), tempDir.resolve(unitTestFile.getName()));
 
-
-
         //TODO: Stuff to do:
-        // - Copy these dependencies into the temp directory:
-        //   -SingleJUnitTestRunner.java
-        //   -lib/junit.jar
-        //   -lib/org.hamcreast.core...jar
         // - Use 'javac' to compile compile the three .java files into .class files:
         // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
         // - Parse the output of each execution and store the coverage results.
@@ -66,6 +66,7 @@ public class CodeCoverage {
     private void validateExecution(File unitTestFile, File targetFile) throws Exception {
         validateJavaFile(unitTestFile);
         validateJavaFile(targetFile);
+
         //make sure java and javac are in the path
         for (String executable : Arrays.asList("javac", "java")) {
             String executableFilename = findExecutable(executable);
@@ -83,13 +84,19 @@ public class CodeCoverage {
                 .findFirst()
                 .map(path -> path.resolve(executableName).toString())
                 .orElse(null);
-        return executablePath.toString();
+        return executablePath;
     }
 
     private void validateJavaFile(File javaFile) throws FileNotFoundException {
         if (!javaFile.exists()) {
             throw new FileNotFoundException(javaFile.getAbsolutePath() + " does not exist");
         }
+    }
+
+    private void copyProjectResourceToDest(String fileName, Path destination) throws IOException {
+        String sourceFile = fileName.replace("java", "jav_");
+        InputStream projectResourceStream = ClassLoader.getSystemResourceAsStream(sourceFile);
+        FileUtils.copyInputStreamToFile(projectResourceStream, destination.resolve(fileName).toFile());
     }
 
 }

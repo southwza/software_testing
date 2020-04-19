@@ -1,0 +1,38 @@
+Instructions to build and run project:
+
+Dependencies:
+ * Java 1.8 or higher
+ * Maven (or use an IDE like Eclipse to build)
+ 
+
+Installation w/ Maven:
+1) Clone the repository:
+    mkdir <installation directory>
+    cd <installation directory>
+    git clone https://github.com/southwza/software_testing.git .
+
+2) Build w/ Maven:
+    mvn install
+
+3) Run 'CodeCoverage':
+    java -cp target/JavaTesting-1.0.0.jar edu.utexas.testing.ee382c.CodeCoverage <unit test file> <target java file>
+     - where <unit test file> is the fully qualified path to a JUnit java file (.java file extension)
+     - where <target java file> is the fully qualified path to the .java file being tested buy the unit test file.
+
+Limitations:
+ - The .java files must not have any external dependencies other than core java language and the JUnit library.
+
+
+Running w/ Eclipse IDE:
+1) Clone the repository:
+    - File -> Import -> Git -> Projects From Git -> Clone URI
+    - Specify https://github.com/southwza/software_testing.git
+    - Choose 'master' branch
+    - Import Existing Eclipse Projects
+
+2) Run CodeCoverage
+    - Expand /src -> edu.utexas.testing.ee382c
+    - Right click 'CodeCoverage.java' -> Run as -> Run Configurations...
+    - Go to 'Arguments' tab and specify: <unit test file> <target java file>
+     - where <unit test file> is the fully qualified path to a JUnit java file (.java file extension)
+     - where <target java file> is the fully qualified path to the .java file being tested buy the unit test file.

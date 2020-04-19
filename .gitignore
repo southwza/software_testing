@@ -21,3 +21,13 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#ignore target dir
+target/*
+
+#ignore eclipse settings dir
+.settings/*
+.project
+
+#ignore .DS_Store
+.DS_Store
