@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,7 +94,8 @@ public class CodeCoverage {
     }
 
     private void copyProjectResourceToDest(String fileName, Path destination) throws IOException {
-        InputStream projectResourceStream = ClassLoader.getSystemResourceAsStream("junit.jar");
+        String sourceFile = fileName.replace("java", "jav_");
+        InputStream projectResourceStream = ClassLoader.getSystemResourceAsStream(sourceFile);
         FileUtils.copyInputStreamToFile(projectResourceStream, destination.resolve(fileName).toFile());
     }
 

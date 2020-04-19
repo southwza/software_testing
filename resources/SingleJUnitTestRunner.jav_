@@ -1,3 +1,5 @@
+package edu.utexas.testing.ee382c;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
@@ -13,7 +15,6 @@ public class SingleJUnitTestRunner {
                 classAndMethod[1]);
 
         Result result = new JUnitCore().run(request);
-        System.out.println(result.getFailures());
         System.exit(result.wasSuccessful() ? 0 : 1);
     }
 }
