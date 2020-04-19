@@ -7,6 +7,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,20 +46,9 @@ public class CodeCoverage {
         System.out.println("Created temporary directory to build and execute junit tests: " + tempDir);
 
         // copy dependencies into the temp directory
-        String home = System.getProperty("user.home");
-        String projectPrefix = "src/edu/utexas/testing/ee382c/";
-
-        File singleJUnitTestRunnerJava = new File(projectPrefix +
-                "utils/SingleJUnitTestRunner.java");
-        File junitJar = new File(home + "/.m2/repository/junit/junit/4.12/junit-4.12.jar");
-        File hamcrestCoreJar = new File(home +
-                "/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar");
-
-        File dest = new File(tempDir + "/");
-
-        FileUtils.copyFileToDirectory(singleJUnitTestRunnerJava, dest);
-        FileUtils.copyFileToDirectory(junitJar, dest);
-        FileUtils.copyFileToDirectory(hamcrestCoreJar, dest);
+        copyProjectResourceToDest("junit.jar", tempDir);
+        copyProjectResourceToDest("org.hamcrest.core_1.3.0.jar", tempDir);
+        copyProjectResourceToDest("SingleJUnitTestRunner.java", tempDir);
 
         //create an annotated version of the target file in our temp directory
         String annotatedJavaString = parserResults.toString();
@@ -100,6 +92,11 @@ public class CodeCoverage {
         if (!javaFile.exists()) {
             throw new FileNotFoundException(javaFile.getAbsolutePath() + " does not exist");
         }
+    }
+
+    private void copyProjectResourceToDest(String fileName, Path destination) throws IOException {
+        InputStream projectResourceStream = ClassLoader.getSystemResourceAsStream("junit.jar");
+        FileUtils.copyInputStreamToFile(projectResourceStream, destination.resolve(fileName).toFile());
     }
 
 }
