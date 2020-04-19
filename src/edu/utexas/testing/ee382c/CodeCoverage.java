@@ -59,7 +59,15 @@ public class CodeCoverage {
 
         //TODO: Stuff to do:
         // - Use 'javac' to compile compile the three .java files into .class files:
+        //   - change directory to temp dir
+        //   - execute: javac -cp ./junit.jar:./ SingleJUnitTestRunner.java
+        //   - execute: javac -cp ./junit.jar:./ <junit test file>
+        //   - execute: javac -cp ./junit.jar:./ <target file>
+        //   - make sure .class files have been created for each of these .java files
+
         // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
+        //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
+        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file.
         // - Parse the output of each execution and store the coverage results.
     }
 
