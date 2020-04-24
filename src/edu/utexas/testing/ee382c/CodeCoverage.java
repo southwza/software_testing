@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 //import sun.tools.jar.CommandLine;
@@ -71,18 +72,44 @@ public class CodeCoverage {
         DefaultExecutor executor = new DefaultExecutor();
         int exitValue = executor.execute(cmdLine);
 
+        String testMethod1 = "";
+        //List<String> test = jUnitTests.getTestMethods();
+        for (String testMethod : jUnitTests.getTestMethods()) {
+            System.out.println(testMethod);
+            testMethod1 = testMethod;
+        }
+
+        line = "java -cp " + tempDir + "/junit.jar:./ " +
+                tempDir + "/SingleJUnitTestRunner.class " +
+                tempDir + "/" + "TriTypTest" + "#" +  testMethod1;
+        String line2 = "java -cp " + tempDir +
+                "/junit.jar:./:" + tempDir + "org.hamcrest.core_1.3.0.jar " +
+                tempDir + "/SingleJUnitTestRunner";
+        String line3 = "java " + tempDir +  "/TryTyp";
+        String line4 = "java -cp " + tempDir + "/junit.jar:./ " +
+                tempDir + "/SingleJUnitTestRunner ";
+        String line5 = "java -cp /tmp/CodeCoverage6177163328741277963/ SingleJUnitTestRunner";
+        cmdLine = CommandLine.parse(line5);
+        exitValue = executor.execute(cmdLine);
+
+        System.out.println("done");
+
         //TODO: Stuff to do:
-        // - Use 'javac' to compile compile the three .java files into .class files:
-        //   - change directory to temp dir
-        //   - execute: javac -cp ./junit.jar:./ SingleJUnitTestRunner.java
-        //   - execute: javac -cp ./junit.jar:./ <junit test file>
-        //   - execute: javac -cp ./junit.jar:./ <target file>
-        //   - make sure .class files have been created for each of these .java files
         // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
         //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
         //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file.
         // - Parse the output of each execution and store the coverage results.
     }
+
+//    private void testRunnerExecution(String className) {
+//        String line = "java -cp ./junit.jar:. SingleJUnitTestRunner " + className
+//                tempDir + "/SingleJUnitTestRunner.java " +
+//                tempDir + "/" + unitTestFile.getName() + " " +
+//                tempDir + "/" + targetFile.getName();
+//        CommandLine cmdLine = CommandLine.parse(line);
+//        DefaultExecutor executor = new DefaultExecutor();
+//        int exitValue = executor.execute(cmdLine);
+//    }
 
     private void validateExecution(File unitTestFile, File targetFile) throws Exception {
         validateJavaFile(unitTestFile);
