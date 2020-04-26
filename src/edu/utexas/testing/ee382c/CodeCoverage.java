@@ -76,7 +76,7 @@ public class CodeCoverage {
         // Execute SingleJUnitTestRunner for each test method in the JUnit file
         String unitTestFileNameNoExt = FilenameUtils.removeExtension(FilenameUtils.getName(unitTestFileName));
         for (String testMethod : jUnitTests.getTestMethods()) {
-            line = "java -cp " + tempDir + "/junit.jar:/tmp/CodeCoverage5233218469390013992/:" +
+            line = "java -cp " + tempDir + ":" + tempDir + "/junit.jar:" +
                     tempDir + "/org.hamcrest.core_1.3.0.jar " +
                     "SingleJUnitTestRunner " + unitTestFileNameNoExt + "#" + testMethod;
             cmdLine = CommandLine.parse(line);
