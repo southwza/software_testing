@@ -6,6 +6,7 @@ import edu.utexas.testing.ee382c.utils.JavaParserUtil;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 //import sun.tools.jar.CommandLine;
@@ -71,16 +73,20 @@ public class CodeCoverage {
         DefaultExecutor executor = new DefaultExecutor();
         int exitValue = executor.execute(cmdLine);
 
+        // Execute SingleJUnitTestRunner for each test method in the JUnit file
+        String unitTestFileNameNoExt = FilenameUtils.removeExtension(FilenameUtils.getName(unitTestFileName));
+        for (String testMethod : jUnitTests.getTestMethods()) {
+            line = "java -cp " + tempDir + ":" + tempDir + "/junit.jar:" +
+                    tempDir + "/org.hamcrest.core_1.3.0.jar " +
+                    "SingleJUnitTestRunner " + unitTestFileNameNoExt + "#" + testMethod;
+            cmdLine = CommandLine.parse(line);
+            exitValue = executor.execute(cmdLine);
+        }
+
         //TODO: Stuff to do:
-        // - Use 'javac' to compile compile the three .java files into .class files:
-        //   - change directory to temp dir
-        //   - execute: javac -cp ./junit.jar:./ SingleJUnitTestRunner.java
-        //   - execute: javac -cp ./junit.jar:./ <junit test file>
-        //   - execute: javac -cp ./junit.jar:./ <target file>
-        //   - make sure .class files have been created for each of these .java files
-        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
+        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner - DONE
         //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
-        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file.
+        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file. (TBD)
         // - Parse the output of each execution and store the coverage results.
     }
 
