@@ -6,6 +6,7 @@ import edu.utexas.testing.ee382c.utils.JavaParserUtil;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,32 +73,22 @@ public class CodeCoverage {
         DefaultExecutor executor = new DefaultExecutor();
         int exitValue = executor.execute(cmdLine);
 
-        String testMethod1 = "";
-        //List<String> test = jUnitTests.getTestMethods();
+        // Execute SingleJUnitTestRunner for each test method in the JUnit file
+        String unitTestFileNameNoExt = FilenameUtils.removeExtension(FilenameUtils.getName(unitTestFileName));
         for (String testMethod : jUnitTests.getTestMethods()) {
-            System.out.println(testMethod);
-            testMethod1 = testMethod;
+            line = "java -cp " + tempDir + "/junit.jar:/tmp/CodeCoverage5233218469390013992/:" +
+                    tempDir + "/org.hamcrest.core_1.3.0.jar " +
+                    "SingleJUnitTestRunner " + unitTestFileNameNoExt + "#" + testMethod;
+            cmdLine = CommandLine.parse(line);
+            exitValue = executor.execute(cmdLine);
         }
-
-        line = "java -cp " + tempDir + "/junit.jar:./ " +
-                tempDir + "/SingleJUnitTestRunner.class " +
-                tempDir + "/" + "TriTypTest" + "#" +  testMethod1;
-        String line2 = "java -cp " + tempDir +
-                "/junit.jar:./:" + tempDir + "org.hamcrest.core_1.3.0.jar " +
-                tempDir + "/SingleJUnitTestRunner";
-        String line3 = "java " + tempDir +  "/TryTyp";
-        String line4 = "java -cp " + tempDir + "/junit.jar:./ " +
-                tempDir + "/SingleJUnitTestRunner ";
-        String line5 = "java -cp /tmp/CodeCoverage6177163328741277963/ SingleJUnitTestRunner";
-        cmdLine = CommandLine.parse(line5);
-        exitValue = executor.execute(cmdLine);
 
         System.out.println("done");
 
         //TODO: Stuff to do:
-        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner
+        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner - DONE
         //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
-        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file.
+        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file. (TBD)
         // - Parse the output of each execution and store the coverage results.
     }
 
