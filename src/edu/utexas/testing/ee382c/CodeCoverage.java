@@ -1,13 +1,16 @@
 package edu.utexas.testing.ee382c;
 
 import edu.utexas.testing.ee382c.entities.JUnitTests;
-import edu.utexas.testing.ee382c.entities.ParserResults;
+import edu.utexas.testing.ee382c.entities.JavaStatement;
+import edu.utexas.testing.ee382c.entities.CoverageResults;
 import edu.utexas.testing.ee382c.utils.JavaParserUtil;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //import sun.tools.jar.CommandLine;
@@ -41,7 +47,7 @@ public class CodeCoverage {
         File targetFile = new File(targetFileName);
         validateExecution(unitTestFile, targetFile);
 
-        ParserResults parserResults = JavaParserUtil.parseTarget(targetFile);
+        CoverageResults parserResults = JavaParserUtil.parseTarget(targetFile);
 
         // Find each JUnit test method in the test file
         JUnitTests jUnitTests = JavaParserUtil.parseJUnitFile(unitTestFile);
@@ -71,23 +77,39 @@ public class CodeCoverage {
                 tempDir + "/" + targetFile.getName();
         CommandLine cmdLine = CommandLine.parse(line);
         DefaultExecutor executor = new DefaultExecutor();
-        int exitValue = executor.execute(cmdLine);
+        executor.execute(cmdLine);
 
         // Execute SingleJUnitTestRunner for each test method in the JUnit file
         String unitTestFileNameNoExt = FilenameUtils.removeExtension(FilenameUtils.getName(unitTestFileName));
         for (String testMethod : jUnitTests.getTestMethods()) {
+            //https://stackoverflow.com/questions/6295866/how-can-i-capture-the-output-of-a-command-as-a-string-with-commons-exec
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+            executor.setStreamHandler(streamHandler);
             line = "java -cp " + tempDir + ":" + tempDir + "/junit.jar:" +
                     tempDir + "/org.hamcrest.core_1.3.0.jar " +
                     "SingleJUnitTestRunner " + unitTestFileNameNoExt + "#" + testMethod;
             cmdLine = CommandLine.parse(line);
-            exitValue = executor.execute(cmdLine);
+            executor.execute(cmdLine);
+            parseOutput(testMethod, outputStream, parserResults);
         }
 
-        //TODO: Stuff to do:
-        // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner - DONE
-        //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
-        //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file. (TBD)
-        // - Parse the output of each execution and store the coverage results.
+        parserResults.displayResults(parserResults);
+    }
+
+    private void parseOutput(String method, ByteArrayOutputStream output, CoverageResults results) {
+        String regex = "^Statement id#(\\d+).*";
+        String[] lines = output.toString().split(System.lineSeparator());
+
+        List<JavaStatement> statementsCovered = 
+                Stream.of(lines) //
+                .filter(line -> line.matches(regex)) //
+                .map(line -> Long.valueOf(line.replaceFirst(regex, "$1"))) //
+                .map(statementId -> results.getStatementById(statementId)) //
+                .distinct() //
+                .collect(Collectors.toList());
+
+        results.getMethodCoverage().put(method, statementsCovered);
     }
 
     private void validateExecution(File unitTestFile, File targetFile) throws Exception {
