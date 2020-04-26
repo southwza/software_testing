@@ -83,24 +83,12 @@ public class CodeCoverage {
             exitValue = executor.execute(cmdLine);
         }
 
-        System.out.println("done");
-
         //TODO: Stuff to do:
         // - For each test method found in the JUnit file, (jUnitTests.getTestMethods()) execute the SingleJUnitTestRunner - DONE
         //   - java -cp ./junit.jar:. SingleJUnitTestRunner <JUnit class name>#testScalene
         //     - I think the class name needs to be prepended with the package if it is defined in the JUnit test file. (TBD)
         // - Parse the output of each execution and store the coverage results.
     }
-
-//    private void testRunnerExecution(String className) {
-//        String line = "java -cp ./junit.jar:. SingleJUnitTestRunner " + className
-//                tempDir + "/SingleJUnitTestRunner.java " +
-//                tempDir + "/" + unitTestFile.getName() + " " +
-//                tempDir + "/" + targetFile.getName();
-//        CommandLine cmdLine = CommandLine.parse(line);
-//        DefaultExecutor executor = new DefaultExecutor();
-//        int exitValue = executor.execute(cmdLine);
-//    }
 
     private void validateExecution(File unitTestFile, File targetFile) throws Exception {
         validateJavaFile(unitTestFile);
