@@ -16,16 +16,17 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import edu.utexas.testing.ee382c.entities.JUnitTests;
 import edu.utexas.testing.ee382c.entities.JavaStatement;
-import edu.utexas.testing.ee382c.entities.ParserResults;
+import edu.utexas.testing.ee382c.entities.CoverageResults;
 
 public class JavaParserUtil {
 
-    public static ParserResults parseTarget(File targetFile) throws FileNotFoundException {
-        ParserResults results = new ParserResults();
+    public static CoverageResults parseTarget(File targetFile) throws FileNotFoundException {
+        CoverageResults results = new CoverageResults();
         CompilationUnit cu = StaticJavaParser.parse(targetFile);
-        ModifierVisitor<ParserResults> statementAnnotationPrepender = new StatementAnnotationPrepender();
+        ModifierVisitor<CoverageResults> statementAnnotationPrepender = new StatementAnnotationPrepender();
         statementAnnotationPrepender.visit(cu, results);
         results.setCompilationUnit(cu);
+        results.setTargetClass(targetFile.getName());
         return results;
     }
 
@@ -49,12 +50,12 @@ public class JavaParserUtil {
         }
     }
 
-    private static class StatementAnnotationPrepender extends ModifierVisitor<ParserResults> {
+    private static class StatementAnnotationPrepender extends ModifierVisitor<CoverageResults> {
         private int statementSequence = 0;
         private ArrayList<JavaStatement> methodStatements = new ArrayList<JavaStatement>();
         
         @Override
-        public MethodDeclaration visit(MethodDeclaration md, ParserResults parserResults) {
+        public MethodDeclaration visit(MethodDeclaration md, CoverageResults parserResults) {
             super.visit(md, parserResults);
             //The parent method doesn't get visited until after the statements...
             String methodName = md.getNameAsString();
@@ -66,7 +67,7 @@ public class JavaParserUtil {
             return md;
         }
         @Override
-        public BlockStmt visit(BlockStmt block, ParserResults arg) {
+        public BlockStmt visit(BlockStmt block, CoverageResults arg) {
             super.visit(block, arg);
 
             int statementIndex = 0;

@@ -13,23 +13,6 @@ public class TriTyp
       "scalene", "isosceles", "equilateral", "not a valid triangle"};
    private static String instructions = "This is the ancient TriTyp program.\nEnter three integers that represent the lengths of the sides of a triangle.\nThe triangle will be categorized as either scalene, isosceles, equilateral\nor invalid.\n";
 
-public static void main (String[] argv)
-{  // Driver program for TriTyp
-   int A, B, C;
-   int T;
-
-   System.out.println (instructions);
-   System.out.println ("Enter side 1: ");
-   A = getN();
-   System.out.println ("Enter side 2: ");
-   B = getN();
-   System.out.println ("Enter side 3: ");
-   C = getN();
-   T = triang (A, B, C);
-
-   System.out.println ("Result is: " + triTypes[T]);
-}
-
 // ====================================
 // The main triangle classification method
 public static int triang (int Side1, int Side2, int Side3)
@@ -88,30 +71,5 @@ public static int triang (int Side1, int Side2, int Side3)
    }
    return (triOut);
 } // end Triang
-
-// ====================================
-// Read (or choose) an integer
-private static int getN ()
-{
-   int inputInt = 1;
-   BufferedReader in = new BufferedReader (new InputStreamReader (System.in));
-   String inStr;
-
-   try
-   {
-      inStr    = in.readLine ();
-      inputInt = Integer.parseInt(inStr);
-   }
-   catch (IOException e)
-   {
-      System.out.println ("Could not read input, choosing 1.");
-   }
-   catch (NumberFormatException e)
-   {
-      System.out.println ("Entry must be a number, choosing 1.");
-   }
-
-   return (inputInt);
-}  // end getN
 
 }  // end TriTyp class
